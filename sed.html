@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Galaxia Cervecera 🍻</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle, #020111, #000);
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+canvas {
+  display: block;
+}
+
+.texto-central {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffd700;
+  font-size: 36px;
+  font-weight: bold;
+  text-shadow: 0 0 20px #ffd700;
+  pointer-events: none;
+  text-align: center;
+}
+
+.frase {
+  position: absolute;
+  color: #fff;
+  font-size: 16px;
+  text-shadow: 0 0 10px #ffcc00;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* 🎵 Botón música */
+.boton-musica {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 18px;
+  background: #ffd700;
+  color: #000;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 0 15px #ffd700;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="galaxia"></canvas>
+
+<div class="texto-central">
+  🍺🍻<br>
+  YA ES HORA DE BEBER
+</div>
+
+<!-- 🎶 MÚSICA -->
+<audio id="musica" loop>
+  <source src="sed1.mp3" type="audio/mpeg">
+</audio>
+
+<button class="boton-musica" onclick="activarMusica()">
+ Activar música🍺
+</button>
+
+<script>
+const canvas = document.getElementById("galaxia");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+
+const cx = canvas.width / 2;
+const cy = canvas.height / 2;
+
+/* 🍻 FRASES */
+const frases = [
+  "Ya es hora de beber 🍺",
+  "Sed 🍻🍺🍻",
+  "Una no es ninguna 🍺",
+  "La última… y otra más 🍻",
+  "Hoy se bebe 🍺",
+  "Modo fiesta activado 🎉🍻",
+  "Cerveza primero 🍺",
+  "Salud 🍻",
+  "Que nunca falte la chela 🍺",
+  "Hora feliz ⏰🍻",
+  "Una ronda más 🍺",
+  "Aquí se vino a beber 🍻",
+  "Bebamos sin miedo 🍺",
+  "Equipo cerveza 🍻",
+  "Refill infinito 🍺"
+];
+
+/* ⭐ Estrellas */
+const estrellas = [];
+for (let i = 0; i < 1600; i++) {
+  estrellas.push({
+    angulo: Math.random() * Math.PI * 2,
+    radio: Math.random() * Math.min(cx, cy),
+    velocidad: Math.random() * 0.001 + 0.0003,
+    tamaño: Math.random() * 1.4 + 0.3
+  });
+}
+
+/* 🍻 Frases flotantes */
+frases.forEach(texto => {
+  const div = document.createElement("div");
+  div.className = "frase";
+  div.innerText = texto;
+  document.body.appendChild(div);
+
+  div.data = {
+    angulo: Math.random() * Math.PI * 2,
+    radio: 220 + Math.random() * 300,
+    velocidad: 0.0006 + Math.random() * 0.0006
+  };
+});
+
+function activarMusica() {
+  const audio = document.getElementById("musica");
+  audio.volume = 0.9;
+  audio.play();
+}
+
+function dibujar() {
+  ctx.fillStyle = "rgba(0,0,0,0.3)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  estrellas.forEach(e => {
+    e.angulo += e.velocidad;
+    const x = cx + Math.cos(e.angulo) * e.radio;
+    const y = cy + Math.sin(e.angulo) * e.radio;
+
+    ctx.fillStyle = "#ffd700";
+    ctx.beginPath();
+    ctx.arc(x, y, e.tamaño, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, 160);
+  grad.addColorStop(0, "#fff2b2");
+  grad.addColorStop(0.4, "#ffd700");
+  grad.addColorStop(1, "transparent");
+
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 160, 0, Math.PI * 2);
+  ctx.fill();
+
+  document.querySelectorAll(".frase").forEach(div => {
+    div.data.angulo += div.data.velocidad;
+    const x = cx + Math.cos(div.data.angulo) * div.data.radio;
+    const y = cy + Math.sin(div.data.angulo) * div.data.radio;
+    div.style.left = x + "px";
+    div.style.top = y + "px";
+  });
+
+  requestAnimationFrame(dibujar);
+}
+
+dibujar();
+window.addEventListener("resize", resize);
+</script>
+
+</body>
+</html>
